@@ -1,0 +1,23 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  padding: 10vh 0;
+}
+
+.content {
+  color: white;
+  text-align: left;
+}
+
+.lead {
+  margin-bottom: 0;
+}
