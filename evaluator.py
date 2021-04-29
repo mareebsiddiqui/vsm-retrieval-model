@@ -4,6 +4,8 @@ import string
 from nltk.stem import WordNetLemmatizer
 from nltk import pos_tag
 
+import query_engine
+
 STOPWORDS_FILE = './Stopword-List.txt'
 
 D = np.load('document_vectors.npy')
@@ -26,6 +28,9 @@ lemmatizer = WordNetLemmatizer()
 
 printable = set(string.printable)
 
+ps = []
+rs = []
+
 with open("./test_queries.txt") as file:
   content = file.read()
   content = content.split("\n")
@@ -33,38 +38,26 @@ with open("./test_queries.txt") as file:
   i = 0
   while i < len(content):
     print(content[i])
-    query_str = content[i].split(" ")
-    query_str = pos_tag(query_str)
-
+    res = query_engine.query(content[i])
+    
     i += 1
 
     result = content[i].split(" ")
     result = list(map(int, result))
-
+    
     i += 1
 
-    q = np.zeros((len(vocab)))
-    for term, tag in query_str:
-      if(len(term) >= 3):
-        term = ''.join(filter(lambda x: x in printable, term))
-        if(term not in stopwords):
-          tag = tag[0].lower()
-          if tag in ['a', 'r', 'n', 'v']:
-            term = lemmatizer.lemmatize(term, tag)
-          print(term)
-          term_index = vocab.index(term)
-          q[term_index] = idf[term]
-
-    q /= np.linalg.norm(q)
-
-    alpha = 0.005
-    S = np.dot(D, q)
-
-    idx = np.arange(S.size)[S > alpha]
-    res = sorted(idx[np.argsort(S[idx])]+1)
     print(res)
+    print(len(res))
     relevant = 0
     for doc in res:
       if doc in result:
         relevant += 1
+
+    ps.append(relevant/len(res))
+    rs.append(relevant/len(result))
+
     print("precision:",relevant/len(res), ", recall:",relevant/len(result))
+
+print(sum(ps)/len(ps))
+print(sum(rs)/len(rs))
